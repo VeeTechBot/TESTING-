@@ -1,0 +1,36 @@
+// this code will glow the inbult led in arduino nano
+
+// Pin definitions
+const int flameAnalogPin = A2; // AO pin of the flame sensor
+const int flameDigitalPin = 12; // DO pin of the flame sensor
+const int ledPin = 13; // Built-in LED on Arduino Nano
+
+void setup() {
+  pinMode(flameDigitalPin, INPUT); // Set DO pin as input
+  pinMode(ledPin, OUTPUT);         // Set LED pin as output
+
+  Serial.begin(9600); // Initialize serial communication for debugging
+}
+
+void loop() {
+  // Read digital output from the flame sensor
+  int flameDetected = digitalRead(flameDigitalPin);
+
+  // Read analog output from the flame sensor
+  int flameIntensity = analogRead(flameAnalogPin);
+
+  // Print analog value for debugging (optional)
+  Serial.print("Flame Intensity (AO): ");
+  Serial.println(flameIntensity);
+
+  // Check if the digital output indicates flame detection
+  if (flameDetected == LOW) {
+    digitalWrite(ledPin, HIGH); // Turn on the LED
+    Serial.println("Flame detected!");
+  } else {
+    digitalWrite(ledPin, LOW); // Turn off the LED
+    Serial.println("No flame detected.");
+  }
+
+  delay(100); // Small delay for stability
+}
