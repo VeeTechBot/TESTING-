@@ -1,0 +1,52 @@
+#include <Servo.h>
+#include <EEPROM.h>
+
+Servo diametre;
+int signal_pin;
+int last_angle = 0 // Default to 0 degrees
+
+void setup() {  
+  Serial.begin(9600);
+
+  Serial.println("Enter the Signal Pin: ");
+  while (!Serial.available()) {} // Wait for input
+
+  signal_pin = Serial.parseInt();
+  Serial.read(); // Clear newline character
+
+  Serial.print("The Signal Pin is set to: ");
+  Serial.println(signal_pin);
+
+  pinMode(signal_pin, OUTPUT);
+  diametre.attach(signal_pin);
+
+  // Read last stored angle from EEPROM
+  last_angle = EEPROM.read(0);
+  if (last_angle < 0 || last_angle > 180) {
+    last_angle = 90; // Default to 90 if invalid
+  }
+
+  Serial.print("Restoring last angle: ");
+  Serial.println(last_angle);
+  diametre.write(last_angle);
+}
+
+void loop() {
+  Serial.println("Enter the angle (0-180) at which you want to rotate: ");
+  
+  while (!Serial.available()) {} // Wait for input
+
+  int angle = Serial.parseInt();
+  Serial.read(); // Clear newline character
+
+  if (angle < 0 || angle > 180) {
+    Serial.println("Invalid angle! Enter a value between 0 and 180.");
+  } else {
+    diametre.write(angle);
+    Serial.print("Servo rotated to: ");
+    Serial.println(angle);
+
+    // Store the angle in EEPROM
+    EEPROM.write(0, angle);
+  }
+}
